@@ -1,6 +1,6 @@
 # AI Agent Guide — Prospeo CLI
 
-> This file helps AI agents (Claude, GPT, Gemini, open-source models) install, authenticate, and use the Prospeo CLI to enrich persons and companies, search for leads, and access verified contact data.
+> This file helps AI agents (Claude, GPT, Gemini, open-source models) install, authenticate, and use the Prospeo CLI to enrich persons and companies, search for leads, and access verified B2B contact data from a 200M+ person and 30M+ company database.
 
 ## Quick Start
 
@@ -17,9 +17,9 @@ prospeo account info
 
 **Requirements:** Node.js 18+
 
-## Authentication
+---
 
-Prospeo uses a simple API key passed as an HTTP header. Provide your key via:
+## Authentication
 
 ```bash
 # 1. Environment variable (recommended for agents)
@@ -34,80 +34,79 @@ prospeo login
 
 Get your API key: https://prospeo.io/dashboard/api
 
+---
+
 ## Output Format
 
 All commands output **JSON to stdout** by default:
 
 ```bash
-# Default: compact JSON
+# Compact JSON (default — best for piping to tools)
 prospeo person enrich --linkedin-url "https://linkedin.com/in/jdoe"
 
-# Pretty-printed JSON
+# Pretty-printed JSON (best when reading yourself)
 prospeo person enrich --linkedin-url "https://linkedin.com/in/jdoe" --pretty
 
-# Select specific fields
+# Select specific top-level fields
 prospeo person enrich --linkedin-url "https://linkedin.com/in/jdoe" --fields person,company
 
-# Suppress output (exit code only)
+# Suppress output (exit code only — 0=success, 1=error)
 prospeo person enrich --linkedin-url "https://linkedin.com/in/jdoe" --quiet
 ```
 
-**Exit codes:** 0 = success, 1 = error. Errors go to stderr as JSON:
+**Exit codes:** 0 = success, 1 = error. Errors always go to stderr as JSON:
 ```json
 {"error":"No API key found.","code":"AUTH_ERROR"}
 ```
 
+---
+
 ## Discovering Commands
 
 ```bash
-# List all command groups
-prospeo --help
-
-# List subcommands in a group
-prospeo person --help
-
-# Get help for a specific subcommand
-prospeo person enrich --help
-```
-
-## All Command Groups & Subcommands
-
-### person
-Enrich and search people (200M+ contacts).
-
-```
-enrich        Enrich a single person — returns email, mobile, job history, company data
-bulk-enrich   Enrich up to 50 persons in one request
-search        Search persons with 30+ filters (seniority, title, industry, location, etc.)
-```
-
-### company
-Enrich and search companies (30M+ companies).
-
-```
-enrich        Enrich a single company — 50+ data points including funding, tech stack, headcount
-bulk-enrich   Enrich up to 50 companies in one request
-search        Search companies with filters (industry, location, funding, employee range, etc.)
-```
-
-### suggestions
-Free autocomplete — no credits consumed.
-
-```
-location    Get location autocomplete for use in search filters
-job-title   Get job title autocomplete for use in search filters
-```
-
-### account
-```
-info   View plan, remaining credits, used credits, and quota renewal date
+prospeo --help                    # all groups
+prospeo person --help             # subcommands in group
+prospeo person enrich --help      # flags + examples for one command
 ```
 
 ---
 
-## Common Workflows for Agents
+## All Commands
 
-### Enrich a person by LinkedIn URL
+### person — Enrich and search people (200M+ contacts)
+
+```
+enrich        Enrich a single person — email, mobile, job history, company data
+bulk-enrich   Enrich up to 50 persons in one request
+search        Search persons with 30+ filters
+```
+
+### company — Enrich and search companies (30M+ companies)
+
+```
+enrich        Enrich a single company — 50+ data points
+bulk-enrich   Enrich up to 50 companies in one request
+search        Search companies with filters
+```
+
+### suggestions — Free autocomplete, no credits consumed
+
+```
+location    Autocomplete location strings for search filters
+job-title   Autocomplete job title strings for search filters
+```
+
+### account
+
+```
+info   Plan, remaining credits, used credits, quota renewal date
+```
+
+---
+
+## Workflows
+
+### 1. Enrich a person by LinkedIn URL
 
 ```bash
 prospeo person enrich \
@@ -115,7 +114,7 @@ prospeo person enrich \
   --pretty
 ```
 
-### Enrich a person by name + company
+### 2. Enrich a person by name + company domain
 
 ```bash
 prospeo person enrich \
@@ -124,7 +123,13 @@ prospeo person enrich \
   --company-website "intercom.com"
 ```
 
-### Enrich with mobile number (10 credits)
+### 3. Enrich a person by email
+
+```bash
+prospeo person enrich --email "john@acme.com" --pretty
+```
+
+### 4. Enrich a person and include mobile (10 credits)
 
 ```bash
 prospeo person enrich \
@@ -134,39 +139,19 @@ prospeo person enrich \
   --pretty
 ```
 
-### Enrich a company by domain
+### 5. Enrich a company by domain
 
 ```bash
 prospeo company enrich --website "stripe.com" --pretty
 ```
 
-### Search for VP-level sales leaders at SaaS companies
+### 6. Enrich a company by LinkedIn URL
 
 ```bash
-prospeo person search \
-  --filters '{"person_seniority":{"include":["VP","C_SUITE"]},"person_job_title":["Head of Sales","VP of Sales","Chief Revenue Officer"],"company_industry":{"include":["TECHNOLOGY"]}}' \
-  --pretty
+prospeo company enrich --linkedin-url "https://linkedin.com/company/stripe" --pretty
 ```
 
-### Search for Series A/B companies in the US with 51–200 employees
-
-```bash
-prospeo company search \
-  --filters '{"company_funding":{"stage":["SERIES_A","SERIES_B"]},"company_location":["United States"],"company_employee_range":{"include":["51_200"]}}' \
-  --pretty
-```
-
-### Paginate through search results
-
-```bash
-# Page 1
-prospeo person search --filters '{"person_seniority":{"include":["DIRECTOR"]}}' --page 1
-
-# Page 2
-prospeo person search --filters '{"person_seniority":{"include":["DIRECTOR"]}}' --page 2
-```
-
-### Bulk enrich 3 persons in one request
+### 7. Bulk enrich persons (preferred over multiple single calls)
 
 ```bash
 prospeo person bulk-enrich \
@@ -179,7 +164,7 @@ prospeo person bulk-enrich \
   --pretty
 ```
 
-### Bulk enrich companies
+### 8. Bulk enrich companies
 
 ```bash
 prospeo company bulk-enrich \
@@ -191,31 +176,92 @@ prospeo company bulk-enrich \
   --pretty
 ```
 
-### Find valid location strings for search filters
+### 9. Search for VP/C-Suite sales leaders at software companies
 
 ```bash
-# What location strings can I use for "New York"?
-prospeo suggestions location --query "new york"
-# → returns: "New York", "New York City", "Greater New York City Area", etc.
-
-# Then use exact string in search:
 prospeo person search \
-  --filters '{"person_location":["New York City, New York, United States"]}' \
+  --filters '{
+    "person_seniority": {"include": ["Vice President", "C-Suite"]},
+    "person_department": {"include": ["Sales"]},
+    "company_industry": {"include": ["Software Development", "Technology Information and Internet"]}
+  }' \
   --pretty
 ```
 
-### Find valid job title strings
+### 10. Search for Director-level engineers at Series A/B startups
+
+```bash
+prospeo person search \
+  --filters '{
+    "person_seniority": {"include": ["Director", "Manager"]},
+    "person_department": {"include": ["Engineering & Technical"]},
+    "company_funding": {"stage": ["Series A", "Series B"]},
+    "company_employee_range": {"include": ["51-100", "101-200", "201-500"]}
+  }' \
+  --pretty
+```
+
+### 11. Search for companies by domain list (up to 500)
+
+```bash
+prospeo company search \
+  --filters '{
+    "company": {"websites": ["stripe.com", "brex.com", "ramp.com", "mercury.com"]}
+  }' \
+  --pretty
+```
+
+### 12. Search Series A/B companies in the US with 51–200 employees
+
+```bash
+prospeo company search \
+  --filters '{
+    "company_funding": {"stage": ["Series A", "Series B"]},
+    "company_location": ["United States"],
+    "company_employee_range": {"include": ["51-100", "101-200"]}
+  }' \
+  --pretty
+```
+
+### 13. Get exact location strings for search filters
+
+```bash
+# ALWAYS run this before using a location in search — strings must be exact
+prospeo suggestions location --query "new york"
+# → [{"name":"New York, United States","type":"STATE"},{"name":"New York City, New York, United States","type":"CITY"},{"name":"Greater New York City Area","type":"ZONE"}]
+
+# Then use the exact "name" value in filters:
+prospeo person search \
+  --filters '{"person_location": ["New York City, New York, United States"]}' \
+  --pretty
+```
+
+### 14. Get exact job title strings
 
 ```bash
 prospeo suggestions job-title --query "chief revenue"
-# → returns: "Chief Revenue Officer", "VP of Revenue", etc.
+# → ["Chief Revenue Officer","VP of Revenue","SVP Revenue Operations",...]
+
+# Use in filters:
+prospeo person search \
+  --filters '{"person_job_title": ["Chief Revenue Officer", "VP of Sales"]}' \
+  --pretty
 ```
 
-### Check remaining credits
+### 15. Paginate through search results
+
+```bash
+# Check total pages from first response: pagination.total_page
+prospeo person search --filters '{"person_seniority":{"include":["Director"]}}' --page 1
+prospeo person search --filters '{"person_seniority":{"include":["Director"]}}' --page 2
+# Max 1000 pages × 25 results = 25,000 results per query
+```
+
+### 16. Check credits before a large operation
 
 ```bash
 prospeo account info --pretty
-# → {"current_plan":"GROWTH","remaining_credits":4850,"used_credits":150,...}
+# → {"current_plan":"GROWTH","remaining_credits":4850,"used_credits":150,"next_quota_renewal_days":12,"next_quota_renewal_date":"2025-07-01T00:00:00Z"}
 ```
 
 ---
@@ -224,79 +270,128 @@ prospeo account info --pretty
 
 | Operation | Credits |
 |-----------|---------|
-| person enrich (email + company) | 1 |
-| person enrich + mobile | 10 |
-| person bulk-enrich (per matched person) | 1 or 10 |
-| person search (per page with results) | 1 |
-| company enrich | 1 |
-| company bulk-enrich (per matched company) | 1 |
-| company search (per page with results) | 1 |
-| suggestions (location/job-title) | Free |
-| account info | Free |
-| Re-enriching same record (lifetime) | Free |
+| `person enrich` | 1 |
+| `person enrich --enrich-mobile` | 10 |
+| `person bulk-enrich` (per matched person) | 1 or 10 |
+| `person search` (per page with ≥1 result) | 1 |
+| `company enrich` | 1 |
+| `company bulk-enrich` (per matched company) | 1 |
+| `company search` (per page with ≥1 result) | 1 |
+| `suggestions location` | **Free** |
+| `suggestions job-title` | **Free** |
+| `account info` | **Free** |
+| Re-enriching same record (account lifetime) | **Free** |
 
 ---
 
 ## Search Filter Reference
 
-### Person Search Filters (`prospeo person search --filters '...'`)
+### Person Search — all filter keys
 
 ```json
 {
   "person_seniority": {
-    "include": ["C_SUITE", "VP", "DIRECTOR", "MANAGER", "SENIOR", "ENTRY"],
-    "exclude": ["INTERN"]
+    "include": ["Vice President", "C-Suite", "Director"],
+    "exclude": ["Intern", "Entry"]
   },
-  "person_job_title": ["Head of Sales", "VP of Engineering"],
   "person_department": {
-    "include": ["SALES", "ENGINEERING", "MARKETING", "FINANCE", "HR", "OPERATIONS", "LEGAL", "PRODUCT", "DESIGN", "CUSTOMER_SUCCESS"]
+    "include": ["Sales", "Engineering & Technical", "Marketing"]
   },
+  "person_job_title": ["Head of Sales", "VP of Engineering", "Chief Revenue Officer"],
   "person_location": ["United States", "California", "New York City, New York, United States"],
   "person_year_of_experience": { "min": 5, "max": 20 },
   "company_industry": {
-    "include": ["TECHNOLOGY", "FINTECH", "HEALTHCARE", "SAAS"],
-    "exclude": ["STAFFING"]
+    "include": ["Software Development", "Financial Services"],
+    "exclude": ["Staffing and Recruiting"]
   },
   "company_location": ["United States", "Greater New York City Area"],
   "company_employee_range": {
-    "include": ["11_50", "51_200", "201_500", "501_1000", "1001_5000"]
+    "include": ["51-100", "101-200", "201-500"]
   },
   "company_websites": ["stripe.com", "brex.com"],
   "company_names": ["Stripe", "Brex"]
 }
 ```
 
-**Important:** Use `prospeo suggestions location` and `prospeo suggestions job-title` to get exact values. You cannot search with ONLY exclude filters — always include at least one include filter.
-
-### Company Search Filters (`prospeo company search --filters '...'`)
+### Company Search — all filter keys
 
 ```json
 {
   "company_industry": {
-    "include": ["TECHNOLOGY", "FINTECH"],
-    "exclude": ["CONSULTING"]
+    "include": ["Software Development", "Financial Services"],
+    "exclude": ["Staffing and Recruiting"]
   },
   "company_location": ["United States", "California"],
   "company_employee_range": {
-    "include": ["51_200", "201_500"]
+    "include": ["51-100", "101-200", "201-500"]
   },
   "company_funding": {
-    "stage": ["SERIES_A", "SERIES_B", "SERIES_C"],
+    "stage": ["Series A", "Series B", "Series C"],
     "last_funding": { "min": 1000000, "max": 50000000 },
     "total_funding": { "min": 5000000 }
   },
   "company": {
-    "websites": ["stripe.com", "brex.com"],
+    "websites": ["stripe.com", "brex.com", "ramp.com"],
     "names": ["Stripe", "Brex"]
   }
 }
+```
+
+**Rules:**
+- Cannot search with ONLY exclude filters — always include at least one `include` filter
+- `company_websites` / `company_names` max 500 items per request
+- Location and job title strings must match exactly — use `suggestions` commands to look them up
+
+---
+
+## Enum Reference
+
+### Seniority values
+```
+"Founder/Owner"  "C-Suite"  "Partner"  "Vice President"  "Head"
+"Director"  "Manager"  "Senior"  "Entry"  "Intern"
+```
+
+### Department values
+```
+"C-Suite"                 "Sales"                    "Engineering & Technical"
+"Marketing"               "Finance"                  "Human Resources"
+"Information Technology"  "Legal"                    "Operations"
+"Product"                 "Design"                   "Consulting"
+"Medical & Health"        "Education & Coaching"
+```
+*Submitting a parent department (e.g. "Engineering & Technical") automatically includes all sub-departments.*
+
+### Employee range values
+```
+"1-10"  "11-20"  "21-50"  "51-100"  "101-200"  "201-500"
+"501-1000"  "1001-2000"  "2001-5000"  "5001-10000"  "10000+"
+```
+
+### Funding stage values
+```
+"Pre seed"       "Seed"             "Series A"          "Series B"
+"Series C"       "Series D"         "Series E-J"        "Angel"
+"Grant"          "Private equity"   "Debt financing"    "Convertible note"
+"Corporate round"  "Post IPO equity"  "Post IPO debt"   "Equity crowdfunding"
+"Product crowdfunding"  "Secondary market"  "Initial coin offering"
+"Non equity assistance"  "Undisclosed"  "Other event"
+```
+
+### Location types (from suggestions endpoint)
+```
+COUNTRY  → e.g. "United States", "France", "Germany"
+STATE    → e.g. "California", "New York", "Ontario"
+CITY     → e.g. "San Francisco, California, United States"
+ZONE     → e.g. "Greater San Francisco Bay Area", "Greater New York City Area"
 ```
 
 ---
 
 ## Response Shapes
 
-### Person Enrich Response
+### `person enrich` / `person bulk-enrich` (single match)
+
 ```json
 {
   "error": false,
@@ -309,45 +404,92 @@ prospeo account info --pretty
     "current_job_title": "VP of Sales",
     "headline": "VP of Sales at Acme Corp",
     "linkedin_url": "https://linkedin.com/in/jdoe",
+    "linkedin_member_id": "12345678",
     "email": {
       "email": "john@acme.com",
       "status": "VERIFIED"
     },
-    "mobile": { "status": "NOT_ENRICHED" },
-    "location": { "country": "United States", "state": "California", "city": "San Francisco" },
-    "skills": ["SaaS", "B2B Sales"]
+    "mobile": {
+      "status": "NOT_ENRICHED"
+    },
+    "location": {
+      "country": "United States",
+      "state": "California",
+      "city": "San Francisco",
+      "timezone": "America/Los_Angeles"
+    },
+    "job_history": [
+      {
+        "company_name": "Acme Corp",
+        "job_title": "VP of Sales",
+        "start_date": "2021-01",
+        "end_date": null,
+        "current": true
+      }
+    ],
+    "skills": ["SaaS", "B2B Sales", "CRM"]
   },
   "company": {
     "company_id": "cccc123",
     "name": "Acme Corp",
     "website": "acme.com",
     "domain": "acme.com",
+    "description": "Acme Corp builds...",
+    "industry": "Software Development",
+    "type": "PRIVATE",
     "employee_count": 150,
-    "industry": "Technology",
-    "funding": { "total_funding": 25000000 }
+    "employee_range": "101-200",
+    "location": {
+      "country": "United States",
+      "state": "California",
+      "city": "San Francisco"
+    },
+    "founded": 2015,
+    "revenue_range": "$10M-$50M",
+    "funding": {
+      "total_funding": 25000000,
+      "last_funding_amount": 15000000,
+      "last_funding_date": "2022-06",
+      "last_funding_stage": "Series B"
+    },
+    "technology": ["Salesforce", "HubSpot", "AWS"],
+    "linkedin_url": "https://linkedin.com/company/acme-corp",
+    "twitter_url": "https://twitter.com/acmecorp"
   }
 }
 ```
 
-### Bulk Enrich Response
+### `person bulk-enrich` response
+
 ```json
 {
   "error": false,
   "total_cost": 2,
   "matched": [
-    { "identifier": "lead_001", "person": {...}, "company": {...} }
+    {
+      "identifier": "lead_001",
+      "person": { "..." : "..." },
+      "company": { "..." : "..." }
+    }
   ],
   "not_matched": ["lead_002"],
   "invalid_datapoints": ["lead_003"]
 }
 ```
 
-### Search Response
+`not_matched` = valid data, but no record found in database
+`invalid_datapoints` = insufficient data to search (e.g. only company_name with no other identifiers)
+
+### `person search` / `company search` response
+
 ```json
 {
   "error": false,
   "results": [
-    { "person": {...}, "company": {...} }
+    {
+      "person": { "..." : "..." },
+      "company": { "..." : "..." }
+    }
   ],
   "pagination": {
     "current_page": 1,
@@ -358,30 +500,88 @@ prospeo account info --pretty
 }
 ```
 
+Note: search results do NOT include email or mobile — use `person enrich` or `person bulk-enrich` to get those after searching.
+
+### `account info` response
+
+```json
+{
+  "error": false,
+  "current_plan": "GROWTH",
+  "remaining_credits": 4850,
+  "used_credits": 150,
+  "current_team_members": 1,
+  "next_quota_renewal_days": 12,
+  "next_quota_renewal_date": "2025-07-01T00:00:00Z"
+}
+```
+
+### `suggestions location` response
+
+```json
+{
+  "error": false,
+  "location_suggestions": [
+    { "name": "New York, United States", "type": "STATE" },
+    { "name": "New York City, New York, United States", "type": "CITY" },
+    { "name": "Greater New York City Area", "type": "ZONE" }
+  ],
+  "job_title_suggestions": null
+}
+```
+
+### `suggestions job-title` response
+
+```json
+{
+  "error": false,
+  "location_suggestions": null,
+  "job_title_suggestions": [
+    "Chief Revenue Officer",
+    "VP of Revenue",
+    "SVP Revenue Operations"
+  ]
+}
+```
+
 ---
 
 ## Error Codes
 
-| Code | Meaning | Fix |
-|------|---------|-----|
-| `AUTH_ERROR` | Invalid or missing API key | Check `PROSPEO_API_KEY` or run `prospeo login` |
-| `INSUFFICIENT_CREDITS` | Account depleted | Add credits at prospeo.io |
-| `NO_MATCH` | No match found for provided data | Try more datapoints |
-| `RATE_LIMIT` | Too many requests | CLI retries automatically with backoff |
-| `VALIDATION_ERROR` | Bad request format | Check `--help` for required fields |
-| `INVALID_FILTERS` | Filter config not supported | Check filter JSON structure |
+| Code | HTTP | Meaning | Fix |
+|------|------|---------|-----|
+| `AUTH_ERROR` | 401 | Invalid or missing API key | Check `PROSPEO_API_KEY` or run `prospeo login` |
+| `INSUFFICIENT_CREDITS` | 400 | Account depleted | Add credits at prospeo.io |
+| `NO_MATCH` | 400 | No record found for provided data | Add more datapoints |
+| `NO_RESULTS` | 400 | Search returned 0 results | Loosen filters |
+| `RATE_LIMIT` | 429 | Too many requests | CLI retries automatically |
+| `VALIDATION_ERROR` | 400 | Bad request format | Check `--help` for required fields |
+| `INVALID_FILTERS` | 400 | Filter config not supported | Check filter JSON structure |
+| `INVALID_DATAPOINTS` | 400 | Insufficient identification data | Add linkedin_url, email, or name+company |
 
 ---
 
-## MCP Server (for Claude, Cursor, VS Code)
+## Rate Limits
 
-The CLI includes a built-in MCP server exposing all commands as tools:
+Rate limits depend on your plan. The API returns these headers with every response:
+- `x-daily-request-left` / `x-daily-rate-limit`
+- `x-minute-request-left` / `x-minute-rate-limit`
+- `x-second-rate-limit`
+
+The CLI automatically retries on 429 with exponential backoff — no need to handle this yourself.
+
+Suggestions endpoint: 15 requests/second across all plans.
+
+---
+
+## MCP Server
 
 ```bash
 prospeo mcp
 ```
 
-MCP config for Claude Desktop / Cursor:
+MCP config for Claude Desktop / Cursor / VS Code:
+
 ```json
 {
   "mcpServers": {
@@ -396,7 +596,8 @@ MCP config for Claude Desktop / Cursor:
 }
 ```
 
-Or if installed globally:
+If installed globally (`npm install -g prospeo-cli`):
+
 ```json
 {
   "mcpServers": {
@@ -417,13 +618,16 @@ Or if installed globally:
 
 ## Tips for AI Agents
 
-1. **Always `--pretty`** when reading output yourself; use compact JSON when piping to tools
-2. **Use suggestions first** — before searching by location or job title, run `suggestions location` / `suggestions job-title` to get exact strings
-3. **Prefer `bulk-enrich`** over multiple single `enrich` calls — it's faster and uses the same credits
-4. **Check `account info`** before large bulk operations to confirm you have enough credits
-5. **Pagination** — search returns 25 results/page; check `pagination.total_page` to know how many pages exist
-6. **`free_enrichment: true`** means a re-enrich of a previously seen record — no charge
-7. **`not_matched` vs `invalid_datapoints`** — `not_matched` means the data is valid but no result found; `invalid_datapoints` means the data was insufficient to search
-8. **Rate limits** are handled automatically with exponential backoff — no need to add sleep
-9. **linkedin_url is the strongest identifier** for person enrichment — use it when available
-10. **company_website is the strongest identifier** for company enrichment — use it over company_name alone
+1. **`linkedin_url` is the strongest person identifier** — use it whenever available; name+company is a fallback
+2. **`company_website` is the strongest company identifier** — never rely on `company_name` alone
+3. **Use `bulk-enrich` over looping `enrich`** — same credit cost, one round-trip, up to 50 records
+4. **Search does NOT return email/mobile** — search to build a list, then bulk-enrich to get contact data
+5. **Always use `suggestions` before searching by location or job title** — strings must match exactly
+6. **Check `pagination.total_page`** on first search response to know how many pages exist
+7. **Check `account info` before large bulk operations** to confirm sufficient credits
+8. **`free_enrichment: true`** means re-enrichment of a previously seen record — no credit charged
+9. **`not_matched` ≠ error** — it means the record is valid but not in the database; try more datapoints
+10. **Rate limits are handled automatically** — exponential backoff on 429, no sleep needed
+11. **`--fields`** reduces output noise: e.g. `--fields person` to get just the person object
+12. **Combine filters for precision** — seniority + department + location + industry narrows well
+13. **Search returns max 25,000 results** (1000 pages × 25) — narrow filters if you need more precision
