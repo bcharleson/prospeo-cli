@@ -1,0 +1,52 @@
+{
+  "name": "prospeo-cli",
+  "version": "0.1.0",
+  "description": "CLI and MCP server for the Prospeo API — person/company enrichment and search for AI agents",
+  "type": "module",
+  "bin": {
+    "prospeo": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "AGENTS.md",
+    "CLAUDE.md"
+  ],
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "dev:mcp": "tsx src/mcp.ts",
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "prospeo",
+    "enrichment",
+    "email-finder",
+    "person-search",
+    "company-search",
+    "b2b",
+    "leads",
+    "cli",
+    "mcp",
+    "ai-agent",
+    "claude",
+    "openai"
+  ],
+  "author": "bcharleson",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^8.3.0",
+    "@modelcontextprotocol/sdk": "^1.27.1",
+    "commander": "^14.0.3",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsup": "^8.4.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}
