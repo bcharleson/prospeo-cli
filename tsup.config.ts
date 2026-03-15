@@ -1,4 +1,7 @@
 import { defineConfig } from 'tsup';
+import { readFileSync } from 'node:fs';
+
+const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'));
 
 export default defineConfig({
   entry: {
@@ -16,4 +19,7 @@ export default defineConfig({
     js: '#!/usr/bin/env node',
   },
   external: ['@inquirer/prompts'],
+  define: {
+    __PKG_VERSION__: JSON.stringify(pkg.version),
+  },
 });

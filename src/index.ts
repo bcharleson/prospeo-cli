@@ -1,12 +1,14 @@
 import { Command } from 'commander';
 import { registerAllCommands } from './commands/index.js';
 
+declare const __PKG_VERSION__: string;
+
 const program = new Command();
 
 program
   .name('prospeo')
   .description('CLI and MCP server for the Prospeo API — person/company enrichment and search')
-  .version('0.1.0')
+  .version(__PKG_VERSION__)
   .option('--api-key <key>', 'API key (overrides PROSPEO_API_KEY env var and stored config)')
   .option('--output <format>', 'Output format: json (default) or pretty', 'json')
   .option('--pretty', 'Shorthand for --output pretty')

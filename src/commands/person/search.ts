@@ -9,9 +9,9 @@ export const personSearchCommand: CommandDefinition = {
     'Search 200M+ persons with 30+ filters. Pass filters as a JSON object via --filters. Use --page for pagination (25 results/page, max 1000 pages). 1 credit per page returned. Use "prospeo suggestions location" and "prospeo suggestions job-title" to find exact filter values.',
   examples: [
     `prospeo person search --filters '{"person_seniority":{"include":["Vice President","C-Suite"]},"company_industry":{"include":["Software Development"]}}' --pretty`,
-    `prospeo person search --filters '{"company_websites":["stripe.com","brex.com"]}' --page 2`,
-    `prospeo person search --filters '{"person_seniority":{"include":["Director"]},"company_location":["United States"]}' --pretty`,
-    `prospeo person search --filters '{"person_seniority":{"include":["Director"]},"company_employee_range":{"include":["101-200","201-500"]}}' --fields "person,company"`,
+    `prospeo person search --filters '{"company":{"websites":{"include":["stripe.com","brex.com"]}}}' --page 2`,
+    `prospeo person search --filters '{"person_seniority":{"include":["Director"]},"company_location":{"include":["United States"]}}' --pretty`,
+    `prospeo person search --filters '{"person_job_title":{"include":["Head of Sales"]},"company_employee_range":{"include":["101-200","201-500"]}}' --fields "person,company"`,
   ],
   inputSchema: z.object({
     filters: z

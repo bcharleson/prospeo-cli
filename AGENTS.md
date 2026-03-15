@@ -217,7 +217,7 @@ prospeo company search \
 prospeo company search \
   --filters '{
     "company_funding": {"stage": ["Series A", "Series B"]},
-    "company_location": ["United States"],
+    "company_location": {"include": ["United States"]},
     "company_employee_range": {"include": ["51-100", "101-200"]}
   }' \
   --pretty
@@ -232,7 +232,7 @@ prospeo suggestions location --query "new york"
 
 # Then use the exact "name" value in filters:
 prospeo person search \
-  --filters '{"person_location": ["New York City, New York, United States"]}' \
+  --filters '{"person_location": {"include": ["New York City, New York, United States"]}}' \
   --pretty
 ```
 
@@ -244,7 +244,7 @@ prospeo suggestions job-title --query "chief revenue"
 
 # Use in filters:
 prospeo person search \
-  --filters '{"person_job_title": ["Chief Revenue Officer", "VP of Sales"]}' \
+  --filters '{"person_job_title": {"include": ["Chief Revenue Officer", "VP of Sales"]}}' \
   --pretty
 ```
 
@@ -297,19 +297,27 @@ prospeo account info --pretty
   "person_department": {
     "include": ["Sales", "Engineering & Technical", "Marketing"]
   },
-  "person_job_title": ["Head of Sales", "VP of Engineering", "Chief Revenue Officer"],
-  "person_location": ["United States", "California", "New York City, New York, United States"],
+  "person_job_title": {
+    "include": ["Head of Sales", "VP of Engineering", "Chief Revenue Officer"]
+  },
+  "person_location": {
+    "include": ["United States", "California", "New York City, New York, United States"]
+  },
   "person_year_of_experience": { "min": 5, "max": 20 },
   "company_industry": {
     "include": ["Software Development", "Financial Services"],
     "exclude": ["Staffing and Recruiting"]
   },
-  "company_location": ["United States", "Greater New York City Area"],
+  "company_location": {
+    "include": ["United States", "Greater New York City Area"]
+  },
   "company_employee_range": {
     "include": ["51-100", "101-200", "201-500"]
   },
-  "company_websites": ["stripe.com", "brex.com"],
-  "company_names": ["Stripe", "Brex"]
+  "company": {
+    "websites": { "include": ["stripe.com", "brex.com"] },
+    "names": { "include": ["Stripe", "Brex"] }
+  }
 }
 ```
 
@@ -321,7 +329,9 @@ prospeo account info --pretty
     "include": ["Software Development", "Financial Services"],
     "exclude": ["Staffing and Recruiting"]
   },
-  "company_location": ["United States", "California"],
+  "company_location": {
+    "include": ["United States", "California"]
+  },
   "company_employee_range": {
     "include": ["51-100", "101-200", "201-500"]
   },
@@ -331,8 +341,8 @@ prospeo account info --pretty
     "total_funding": { "min": 5000000 }
   },
   "company": {
-    "websites": ["stripe.com", "brex.com", "ramp.com"],
-    "names": ["Stripe", "Brex"]
+    "websites": { "include": ["stripe.com", "brex.com", "ramp.com"] },
+    "names": { "include": ["Stripe", "Brex"] }
   }
 }
 ```

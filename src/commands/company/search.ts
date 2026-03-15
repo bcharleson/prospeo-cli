@@ -9,9 +9,9 @@ export const companySearchCommand: CommandDefinition = {
     'Search 30M+ companies with filters for industry, location, funding, employee count, technologies, and more. Pass filters as a JSON object via --filters. 1 credit per page returned (25 results/page).',
   examples: [
     `prospeo company search --filters '{"company_industry":{"include":["Software Development"]},"company_employee_range":{"include":["51-100","101-200"]}}' --pretty`,
-    `prospeo company search --filters '{"company_location":["United States"],"company_funding":{"stage":["Series A","Series B"]}}' --page 1`,
-    `prospeo company search --filters '{"company":{"websites":["stripe.com","brex.com","ramp.com"]}}' --pretty`,
-    `prospeo company search --filters '{"company_industry":{"include":["Financial Services"]},"company_location":["New York, United States"]}' --page 2`,
+    `prospeo company search --filters '{"company_location":{"include":["United States"]},"company_funding":{"stage":["Series A","Series B"]}}' --page 1`,
+    `prospeo company search --filters '{"company":{"websites":{"include":["stripe.com","brex.com","ramp.com"]}}}' --pretty`,
+    `prospeo company search --filters '{"company_industry":{"include":["Financial Services"]},"company_location":{"include":["New York, United States"]}}' --page 2`,
   ],
   inputSchema: z.object({
     filters: z
