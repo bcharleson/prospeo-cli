@@ -1,6 +1,6 @@
 {
   "name": "prospeo-cli",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "CLI and MCP server for the Prospeo API — person/company enrichment and search for AI agents",
   "type": "module",
   "bin": {
