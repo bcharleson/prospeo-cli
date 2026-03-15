@@ -4,7 +4,7 @@
   "description": "CLI and MCP server for the Prospeo API — person/company enrichment and search for AI agents",
   "type": "module",
   "bin": {
-    "prospeo": "./dist/index.js"
+    "prospeo": "dist/index.js"
   },
   "files": [
     "dist",
