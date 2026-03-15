@@ -22,6 +22,10 @@ npm install -g prospeo-cli
 ```bash
 npm install -g prospeo-cli
 
+# If 'prospeo' is not found after install, add npm global bin to PATH:
+export PATH="$(npm root -g)/../bin:$PATH"
+# Add that line to ~/.zshrc or ~/.bashrc to make it permanent
+
 # Set your API key (get it at https://prospeo.io/dashboard/api)
 export PROSPEO_API_KEY="your-api-key"
 

@@ -129,8 +129,12 @@ export class ProspeoClient implements IProspeoClient {
 
   private parseApiError(body: any, statusCode: number): ProspeoError {
     const code = body?.error_code ?? body?.code ?? 'API_ERROR';
-    const message =
+    const baseMessage =
       body?.message ?? body?.error_message ?? body?.error ?? `API error (HTTP ${statusCode})`;
+    // Surface filter_error detail when present — it contains the actual invalid value/key
+    const message = body?.filter_error
+      ? `${baseMessage} — ${body.filter_error}`
+      : baseMessage;
 
     switch (code) {
       case 'INVALID_API_KEY':

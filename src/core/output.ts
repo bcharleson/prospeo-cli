@@ -45,7 +45,16 @@ function pickFields(
 ): Record<string, unknown> {
   const result: Record<string, unknown> = {};
   for (const field of fields) {
-    if (field in obj) {
+    if (field.includes('.')) {
+      // Dot-notation: "person.full_name" → nested lookup
+      const parts = field.split('.');
+      let value: unknown = obj;
+      for (const part of parts) {
+        if (value === null || typeof value !== 'object') { value = undefined; break; }
+        value = (value as Record<string, unknown>)[part];
+      }
+      if (value !== undefined) result[field] = value;
+    } else if (field in obj) {
       result[field] = obj[field];
     }
   }
