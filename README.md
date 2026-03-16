@@ -77,7 +77,7 @@ prospeo company bulk-enrich \
 
 # Search 30M+ companies
 prospeo company search \
-  --filters '{"company_funding":{"stage":["Series A","Series B"]},"company_location":["United States"]}' \
+  --filters '{"company_funding":{"stage":["Series A","Series B"]},"company_location_search":{"include":["United States"]}}' \
   --pretty
 ```
 

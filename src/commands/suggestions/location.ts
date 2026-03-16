@@ -6,7 +6,7 @@ export const suggestionsLocationCommand: CommandDefinition = {
   group: 'suggestions',
   subcommand: 'location',
   description:
-    'Get autocomplete location suggestions for use in person/company search filters. Returns COUNTRY, STATE, CITY, and ZONE entries. Free — no credits consumed. Use the returned "name" values in company_location and person_location filter arrays.',
+    'Get autocomplete location suggestions for use in person/company search filters. Returns COUNTRY, STATE, CITY, and ZONE entries. Free — no credits consumed. Use the returned "name" values in company_location_search and person_location_search filter objects.',
   examples: [
     'prospeo suggestions location --query "united states"',
     'prospeo suggestions location --query "new york" --pretty',

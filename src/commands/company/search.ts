@@ -8,10 +8,10 @@ export const companySearchCommand: CommandDefinition = {
   description:
     'Search 30M+ companies with filters for industry, location, funding, employee count, technologies, and more. Pass filters as a JSON object via --filters. 1 credit per page returned (25 results/page).',
   examples: [
-    `prospeo company search --filters '{"company_industry":{"include":["Software Development"]},"company_employee_range":{"include":["51-100","101-200"]}}' --pretty`,
-    `prospeo company search --filters '{"company_location":{"include":["United States"]},"company_funding":{"stage":["Series A","Series B"]}}' --page 1`,
+    `prospeo company search --filters '{"company_industry":{"include":["Software Development"]},"company_headcount_range":["51-100","101-200"]}' --pretty`,
+    `prospeo company search --filters '{"company_location_search":{"include":["United States"]},"company_funding":{"stage":["Series A","Series B"]}}' --page 1`,
     `prospeo company search --filters '{"company":{"websites":{"include":["stripe.com","brex.com","ramp.com"]}}}' --pretty`,
-    `prospeo company search --filters '{"company_industry":{"include":["Financial Services"]},"company_location":{"include":["New York, United States"]}}' --page 2`,
+    `prospeo company search --filters '{"company_industry":{"include":["Financial Services"]},"company_location_search":{"include":["New York, United States"]}}' --page 2`,
   ],
   inputSchema: z.object({
     filters: z
@@ -20,7 +20,7 @@ export const companySearchCommand: CommandDefinition = {
         z.record(z.unknown()),
       )
       .describe(
-        'JSON object of search filters. Common keys: company_industry (include/exclude), company_location (array of exact strings), company_employee_range (include/exclude), company_funding (stage/funding_date/last_funding/total_funding), company (websites array max 500, names array max 500). Use exact strings from the Prospeo dashboard for location values.',
+        'JSON filter object. Verified working keys: company_industry {include/exclude}, company_location_search {include/exclude} (use suggestions location for exact strings), company_headcount_range (plain array e.g. ["51-100","101-200"]), company_headcount_custom {min,max}, company_funding {stage:[],last_funding:{min,max},total_funding:{min,max}}, company {websites:{include:[]}, names:{include:[]}}. Cannot use only exclude filters.',
       ),
     page: z.coerce
       .number()

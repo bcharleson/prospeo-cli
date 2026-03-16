@@ -10,8 +10,8 @@ export const personSearchCommand: CommandDefinition = {
   examples: [
     `prospeo person search --filters '{"person_seniority":{"include":["Vice President","C-Suite"]},"company_industry":{"include":["Software Development"]}}' --pretty`,
     `prospeo person search --filters '{"company":{"websites":{"include":["stripe.com","brex.com"]}}}' --page 2`,
-    `prospeo person search --filters '{"person_seniority":{"include":["Director"]},"company_location":{"include":["United States"]}}' --pretty`,
-    `prospeo person search --filters '{"person_job_title":{"include":["Head of Sales"]},"company_employee_range":{"include":["101-200","201-500"]}}' --fields "person,company"`,
+    `prospeo person search --filters '{"person_seniority":{"include":["Director"]},"company_location_search":{"include":["United States"]}}' --pretty`,
+    `prospeo person search --filters '{"person_job_title":{"include":["Head of Sales"]},"company_headcount_range":["101-200","201-500"]}' --fields "person,company"`,
   ],
   inputSchema: z.object({
     filters: z
@@ -20,7 +20,7 @@ export const personSearchCommand: CommandDefinition = {
         z.record(z.unknown()),
       )
       .describe(
-        'JSON object of search filters. Common keys: person_seniority (include/exclude arrays), person_job_title (array), company_industry (include/exclude), company_location (array), person_location (array), company_websites (array, max 500), company_names (array, max 500), company_employee_range (include/exclude), person_year_of_experience (min/max), person_department (include/exclude). Use search-suggestions for exact location/job-title values.',
+        'JSON filter object. Verified working keys: person_seniority {include/exclude}, person_job_title {include, match_only_exact_job_titles?}, person_department {include/exclude}, person_location_search {include/exclude} (use suggestions location for exact strings), company_industry {include/exclude}, company_location_search {include/exclude} (use suggestions location for exact strings), company_headcount_range (plain array e.g. ["51-100","101-200"]), company_headcount_custom {min,max}, company {websites:{include:[]}, names:{include:[]}}. Cannot use only exclude filters.',
       ),
     page: z.coerce
       .number()
